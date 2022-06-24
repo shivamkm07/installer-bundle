@@ -169,11 +169,11 @@ def parseArguments():
     cli_ver = str(args["cli_ver"])
     ARCHIVE_DIR = str(args["archive_dir"])
 
-    if runtime_ver == "latest":
+    if runtime_ver == "latest" or runtime_ver == "":
         runtime_ver = getLatestRelease(GITHUB_DAPR_REPO)
-    if dashboard_ver == "latest":
+    if dashboard_ver == "latest" or dashboard_ver == "":
         dashboard_ver = getLatestRelease(GITHUB_DASHBOARD_REPO)
-    if cli_ver == "latest":
+    if cli_ver == "latest" or cli_ver == "":
         cli_ver = getLatestRelease(GITHUB_CLI_REPO)
 
 def deleteIfExists(dir):

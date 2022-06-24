@@ -22,6 +22,24 @@ on:
       - release-*
     tags:
       - v*
+  workflow_dispatch:
+    inputs:
+      runtime_ver:
+        description: "Dapr Runtime Version"
+        required: false
+        default: "latest"
+        type: string
+      cli_ver:
+        description: "Dapr CLI Version"
+        required: false
+        default: "latest"
+        type: string      
+      dashboard_ver:
+        description: "Dapr Dashboard Version"
+        required: false
+        default: "latest"
+        type: string
+
   pull_request:
     branches:
       - main
@@ -72,7 +90,7 @@ jobs:
           echo RELEASE VERSION: ${{env.REL_VERSION}}
       
       - name: Create and Archive bundle
-        run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}}
+        run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{inputs.runtime_ver}} --cli_ver=${{inputs.cli_ver}} --dashboard_ver=${{inputs.dashboard_ver}}
 
       - name: Create release_version.txt
         if: matrix.target_arch == 'amd64' && matrix.target_os == 'linux'

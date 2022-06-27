@@ -19,10 +19,12 @@ import sys
 
 gitRef = os.getenv("GITHUB_REF")
 tagRefPrefix = "refs/tags/v"
+DaprVersion = "latest"
 
 with open(os.getenv("GITHUB_ENV"), "a") as githubEnv:
     if gitRef is None or not gitRef.startswith(tagRefPrefix):
         githubEnv.write("REL_VERSION=edge\n")
+        githubEnv.write("RUNTIME_VERSION=latest\n")
         print ("This is daily build from {}...".format(gitRef))
         sys.exit(0)
 
@@ -36,3 +38,5 @@ with open(os.getenv("GITHUB_ENV"), "a") as githubEnv:
         print ("Release build from {}...".format(gitRef))
 
     githubEnv.write("REL_VERSION={}\n".format(releaseVersion))
+    runtimeVersion = releaseVersion.split("+")[0]
+    githubEnv.write("RUNTIME_VERSION={}\n".format(runtimeVersion))

@@ -84,13 +84,19 @@ jobs:
       - name: Parse release version and set REL_VERSION
         run: python ./.github/scripts/get_release_version.py
       
-      - name: Check REL_VERSION
-        if: matrix.target_os == 'linux' && matrix.target_arch == 'amd64'
+      - name: Check env variables
         run: |
           echo RELEASE VERSION: ${{env.REL_VERSION}}
+          echo RUNTIME VERSION: ${{env.RUNTIME_VERSION}}
+          echo GITHUB_EVENT_NAME: ${{env.GITHUB_EVENT_NAME}}
       
-      - name: Create and Archive bundle
+      - name: Create and Archive bundle in workflow_dispatch
+        if: ${{env.GITHUB_EVENT_NAME}} == "workflow_dispatch"
         run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{inputs.runtime_ver}} --cli_ver=${{inputs.cli_ver}} --dashboard_ver=${{inputs.dashboard_ver}}
+
+      - name: Create and Archive bundle without workflow_dispatch
+        if: ${{env.GITHUB_EVENT_NAME}} != "workflow_dispatch"
+        run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{env.RUNTIME_VERSION}}
 
       - name: Create release_version.txt
         if: matrix.target_arch == 'amd64' && matrix.target_os == 'linux'

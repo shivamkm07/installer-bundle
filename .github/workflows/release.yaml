@@ -152,6 +152,8 @@ jobs:
           artifacts: ""
           bodyFile: ""
           tag: "vedge"
+          name: "Dapr Installer-Bundle vedge"
+          prerelease: true
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
       # - name: publish binaries to github

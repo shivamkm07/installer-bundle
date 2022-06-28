@@ -135,27 +135,43 @@ jobs:
 
       - name: lists artifacts
         run: ls -l ${{ env.ARTIFACT_DIR }}
+      
+      - name: Upload release using ncipollo/release-action
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${RELEASE_ARTIFACT[*]}"
+          token: $GITHUB_TOKEN
+          owner: $OWNER_NAME
+          repo: $REPO_NAME
+          tag: "v${REL_VERSION}"
+          name: "Dapr Installer-Bundle v${REL_VERSION}"
+          prerelease: true
+          allowUpdates: true
+        env:
+          OWNER_NAME: "${GITHUB_REPOSITORY%%/*}"
+          REPO_NAME: "${GITHUB_REPOSITORY#*/}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: publish binaries to github
-        if: startswith(github.ref, 'refs/tags/v')
-        run: |
-          echo "installing github-release-cli..."
-          sudo npm install --silent --no-progress -g github-release-cli@1.3.1
-          # Get the list of files
-          RELEASE_ARTIFACT=(${ARTIFACT_DIR}/*)
-          # Parse repository to get owner and repo names
+      # - name: publish binaries to github
+      #   if: startswith(github.ref, 'refs/tags/v')
+      #   run: |
+      #     echo "installing github-release-cli..."
+      #     sudo npm install --silent --no-progress -g github-release-cli@1.3.1
+      #     # Get the list of files
+      #     RELEASE_ARTIFACT=(${ARTIFACT_DIR}/*)
+      #     # Parse repository to get owner and repo names
 
-          OWNER_NAME="${GITHUB_REPOSITORY%%/*}"
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+      #     OWNER_NAME="${GITHUB_REPOSITORY%%/*}"
+      #     REPO_NAME="${GITHUB_REPOSITORY#*/}"
 
-          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      #     export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
-          echo "Uploading Dapr Installer-Bundle to GitHub Release"
-          github-release upload \
-            --owner $OWNER_NAME --repo $REPO_NAME \
-            --tag "v${REL_VERSION}" \
-            --name "Dapr Installer-Bundle v${REL_VERSION}" \
-            --prerelease true \
-            ${RELEASE_ARTIFACT[*]}
+      #     echo "Uploading Dapr Installer-Bundle to GitHub Release"
+      #     github-release upload \
+      #       --owner $OWNER_NAME --repo $REPO_NAME \
+      #       --tag "v${REL_VERSION}" \
+      #       --name "Dapr Installer-Bundle v${REL_VERSION}" \
+      #       --prerelease true \
+      #       ${RELEASE_ARTIFACT[*]}
 
 

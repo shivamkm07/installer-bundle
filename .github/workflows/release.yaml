@@ -140,17 +140,13 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "${RELEASE_ARTIFACT[*]}"
-          token: $GITHUB_TOKEN
-          owner: $OWNER_NAME
-          repo: $REPO_NAME
-          tag: "v${REL_VERSION}"
-          name: "Dapr Installer-Bundle v${REL_VERSION}"
+          token:  ${{ secrets.GITHUB_TOKEN }}
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          tag: "v${{ env.REL_VERSION }}"
+          name: "Dapr Installer-Bundle v${{ env.REL_VERSION }}"
           prerelease: true
           allowUpdates: true
-        env:
-          OWNER_NAME: "${GITHUB_REPOSITORY%%/*}"
-          REPO_NAME: "${GITHUB_REPOSITORY#*/}"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: publish binaries to github
       #   if: startswith(github.ref, 'refs/tags/v')

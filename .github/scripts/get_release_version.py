@@ -32,9 +32,11 @@ with open(os.getenv("GITHUB_ENV"), "a") as githubEnv:
 
     if gitRef.find("-rc.") > 0:
         print ("Release Candidate build from {}...".format(gitRef))
+        githubEnv.write("PRERELEASE=true\n")
     else:
         # Set LATEST_RELEASE to true
         githubEnv.write("LATEST_RELEASE=true\n")
+        githubEnv.write("PRERELEASE=false\n")
         print ("Release build from {}...".format(gitRef))
 
     githubEnv.write("REL_VERSION={}\n".format(releaseVersion))

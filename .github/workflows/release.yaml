@@ -143,7 +143,7 @@ jobs:
           token:  ${{ secrets.GITHUB_TOKEN }}
           tag: "v${{ env.REL_VERSION }}"
           name: "Dapr Installer-Bundle v${{ env.REL_VERSION }}"
-          prerelease: true
+          prerelease: ${{ env.PRERELEASE }}
           allowUpdates: true
 
       # - name: publish binaries to github

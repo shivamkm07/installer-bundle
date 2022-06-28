@@ -112,7 +112,7 @@ jobs:
   publish:
     name: Publish Bundle created
     needs: build
-    if: startswith(github.ref, 'refs/tags/v')
+    # if: startswith(github.ref, 'refs/tags/v')
     env:
       ARTIFACT_DIR: ./release
     runs-on: ubuntu-latest

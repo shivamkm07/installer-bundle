@@ -54,12 +54,10 @@ jobs:
       ARCHIVE_DIR: archives
     strategy:
       matrix:
-        target_os: [linux, windows, darwin]
-        target_arch: [amd64, arm64, arm]
+        target_os: [linux]
+        target_arch: [amd64]
         include:
           -  target_os: linux
-          -  target_os: windows
-          -  target_os: darwin
         exclude:
           - target_os: windows
             target_arch: arm
@@ -139,7 +137,7 @@ jobs:
       - name: Upload release using ncipollo/release-action
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ env.ARTIFACT_DIR }}/*"
+          artifacts: "${{ env.ARTIFACT_DIR }}/daprbundle_linux_amd64.tar.gz"
           token:  ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}

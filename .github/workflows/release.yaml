@@ -146,6 +146,7 @@ jobs:
       #     name: "Dapr Installer-Bundle vedge"
       #     prerelease: true
       #     allowUpdates: true
+        
       - name: Upload release using ncipollo/release-action
         uses: ncipollo/release-action@v1
         with:
@@ -154,6 +155,7 @@ jobs:
           tag: "vedge"
           name: "Dapr Installer-Bundle vedge"
           prerelease: true
+          repo: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
       # - name: publish binaries to github

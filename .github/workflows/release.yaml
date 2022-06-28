@@ -117,6 +117,9 @@ jobs:
       ARTIFACT_DIR: ./release
     runs-on: ubuntu-latest
     steps:
+    
+      - name: Checkout code into current directory
+        uses: actions/checkout@v2
       - name: download artifacts
         uses: actions/download-artifact@master
         with:

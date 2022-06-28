@@ -99,11 +99,6 @@ jobs:
         if: github.event_name != 'workflow_dispatch'
         run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{env.RUNTIME_VERSION}}
 
-      - name: Create release_version.txt
-        if: matrix.target_arch == 'amd64' && matrix.target_os == 'linux'
-        run: |
-          [ ! -z "${{ env.REL_VERSION }}" ] && echo "${{ env.REL_VERSION }}" > "${{ env.ARCHIVE_DIR }}/release_version.txt"
-
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
@@ -117,24 +112,18 @@ jobs:
       ARTIFACT_DIR: ./release
     runs-on: ubuntu-latest
     steps:
-    
+
       - name: Checkout code into current directory
         uses: actions/checkout@v2
+
+      - name: Parse release version and set REL_VERSION
+        run: python ./.github/scripts/get_release_version.py
+
       - name: download artifacts
         uses: actions/download-artifact@master
         with:
           name: bundle_drop
           path: ${{env.ARTIFACT_DIR}}
-      
-      # - name: Set Release Version
-      #   run: |
-      #     REL_VERSION_FILE="${{ env.ARTIFACT_DIR }}/release_version.txt"
-      #     REL_VER=`cat ${REL_VERSION_FILE}`
-      #     echo "REL_VERSION=${REL_VER}" >> $GITHUB_ENV
-      #     rm -f ${REL_VERSION_FILE}
-
-      - name: Parse release version and set REL_VERSION
-        run: python ./.github/scripts/get_release_version.py
 
       - name: generate checksum files
         run: cd ${ARTIFACT_DIR} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -

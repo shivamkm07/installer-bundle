@@ -18,12 +18,14 @@ from fileinput import filename
 from http.client import OK
 import subprocess
 import tarfile
+from tkinter import Variable
 import zipfile
 import requests
 import json
 import os
 import sys
 import shutil
+import semver
 
 
 # GitHub Organization and repo name to download release
@@ -46,19 +48,29 @@ ARCHIVE_DIR="archive"
 
 global runtime_os,runtime_arch,runtime_ver,dashboard_ver,cli_ver
 
+
+# Returns latest release/pre-release version of the given repo from GitHub
 def getLatestRelease(repo):
     daprReleaseUrl = "https://api.github.com/repos/" + GITHUB_ORG + "/" + repo + "/releases"
     print(daprReleaseUrl)
-    latest_release = ""
     resp = requests.get(daprReleaseUrl)
     if resp.status_code != requests.codes.ok:
         print(f"Error pulling latest release of {repo}")
         resp.raise_for_status()
         sys.exit(1)
     data = json.loads(resp.text)
-    version = data[0]['tag_name'].lstrip("v")
-    print(version)
-    return version
+    versions = []
+    for release in data:
+        if not release["draft"]:
+            versions.append(release["tag_name"].lstrip("v"))
+    if len(versions) == 0:
+        print(f"No releases found for {repo}")
+        sys.exit(1)
+    latest_release = versions[0]
+    for version in versions:
+        if semver.compare(version,latest_release) > 0:
+            latest_release = version
+    return latest_release
 
 def binaryFileName(fileBase):
     if(runtime_os == "windows"):

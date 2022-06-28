@@ -139,7 +139,7 @@ jobs:
       - name: Upload release using ncipollo/release-action
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${RELEASE_ARTIFACT[*]}"
+          artifacts: "${{ env.ARTIFACT_DIR }}/*"
           token:  ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}

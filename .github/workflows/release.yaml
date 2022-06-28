@@ -123,12 +123,15 @@ jobs:
           name: bundle_drop
           path: ${{env.ARTIFACT_DIR}}
       
-      - name: Set Release Version
-        run: |
-          REL_VERSION_FILE="${{ env.ARTIFACT_DIR }}/release_version.txt"
-          REL_VER=`cat ${REL_VERSION_FILE}`
-          echo "REL_VERSION=${REL_VER}" >> $GITHUB_ENV
-          rm -f ${REL_VERSION_FILE}
+      # - name: Set Release Version
+      #   run: |
+      #     REL_VERSION_FILE="${{ env.ARTIFACT_DIR }}/release_version.txt"
+      #     REL_VER=`cat ${REL_VERSION_FILE}`
+      #     echo "REL_VERSION=${REL_VER}" >> $GITHUB_ENV
+      #     rm -f ${REL_VERSION_FILE}
+
+      - name: Parse release version and set REL_VERSION
+        run: python ./.github/scripts/get_release_version.py
 
       - name: generate checksum files
         run: cd ${ARTIFACT_DIR} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -

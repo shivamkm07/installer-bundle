@@ -110,6 +110,7 @@ jobs:
   publish:
     name: Publish Bundle created
     needs: build
+    permissions: write-all
     # if: startswith(github.ref, 'refs/tags/v')
     env:
       ARTIFACT_DIR: ./release

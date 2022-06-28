@@ -47,103 +47,103 @@ on:
 
 
 jobs:
-  build:
-    name: Build ${{ matrix.target_os }}_${{ matrix.target_arch }} bundles
-    runs-on: ubuntu-latest
-    env:
-      ARCHIVE_DIR: archives
-    strategy:
-      matrix:
-        target_os: [linux]
-        target_arch: [amd64]
-        include:
-          -  target_os: linux
-        exclude:
-          - target_os: windows
-            target_arch: arm
-          - target_os: windows
-            target_arch: arm64
-          - target_os: darwin
-            target_arch: arm
-    steps:
-      - name: Checkout code into current directory
-        uses: actions/checkout@v2
+  # build:
+  #   name: Build ${{ matrix.target_os }}_${{ matrix.target_arch }} bundles
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     ARCHIVE_DIR: archives
+  #   strategy:
+  #     matrix:
+  #       target_os: [linux]
+  #       target_arch: [amd64]
+  #       include:
+  #         -  target_os: linux
+  #       exclude:
+  #         - target_os: windows
+  #           target_arch: arm
+  #         - target_os: windows
+  #           target_arch: arm64
+  #         - target_os: darwin
+  #           target_arch: arm
+  #   steps:
+  #     - name: Checkout code into current directory
+  #       uses: actions/checkout@v2
 
-      - name: Installing python version > 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-          cache: 'pip'
-      - run: pip install -r requirements.txt
+  #     - name: Installing python version > 3.7
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.8'
+  #         cache: 'pip'
+  #     - run: pip install -r requirements.txt
 
-      - name: Display Python version
-        run: python --version
+  #     - name: Display Python version
+  #       run: python --version
    
-      - name: Parse release version and set REL_VERSION
-        run: python ./.github/scripts/get_release_version.py
+  #     - name: Parse release version and set REL_VERSION
+  #       run: python ./.github/scripts/get_release_version.py
       
-      - name: Check env variables
-        run: |
-          echo RELEASE VERSION: ${{env.REL_VERSION}}
-          echo RUNTIME VERSION: ${{env.RUNTIME_VERSION}}
-          echo GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
-          echo GITHUB_EVENT_NAME: ${{github.event_name}}
+  #     - name: Check env variables
+  #       run: |
+  #         echo RELEASE VERSION: ${{env.REL_VERSION}}
+  #         echo RUNTIME VERSION: ${{env.RUNTIME_VERSION}}
+  #         echo GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}
+  #         echo GITHUB_EVENT_NAME: ${{github.event_name}}
       
-      - name: Create and Archive bundle in workflow_dispatch
-        if: github.event_name == 'workflow_dispatch'
-        run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{inputs.runtime_ver}} --cli_ver=${{inputs.cli_ver}} --dashboard_ver=${{inputs.dashboard_ver}}
+  #     - name: Create and Archive bundle in workflow_dispatch
+  #       if: github.event_name == 'workflow_dispatch'
+  #       run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{inputs.runtime_ver}} --cli_ver=${{inputs.cli_ver}} --dashboard_ver=${{inputs.dashboard_ver}}
 
-      - name: Create and Archive bundle without workflow_dispatch
-        if: github.event_name != 'workflow_dispatch'
-        run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{env.RUNTIME_VERSION}}
+  #     - name: Create and Archive bundle without workflow_dispatch
+  #       if: github.event_name != 'workflow_dispatch'
+  #       run: python ./.github/scripts/build_daprbundle.py --runtime_os=${{matrix.target_os}} --runtime_arch=${{matrix.target_arch}} --archive_dir=${{env.ARCHIVE_DIR}} --runtime_ver=${{env.RUNTIME_VERSION}}
 
-      - name: Create release_version.txt
-        if: matrix.target_arch == 'amd64' && matrix.target_os == 'linux'
-        run: |
-          [ ! -z "${{ env.REL_VERSION }}" ] && echo "${{ env.REL_VERSION }}" > "${{ env.ARCHIVE_DIR }}/release_version.txt"
+  #     - name: Create release_version.txt
+  #       if: matrix.target_arch == 'amd64' && matrix.target_os == 'linux'
+  #       run: |
+  #         [ ! -z "${{ env.REL_VERSION }}" ] && echo "${{ env.REL_VERSION }}" > "${{ env.ARCHIVE_DIR }}/release_version.txt"
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: bundle_drop
-          path: ${{env.ARCHIVE_DIR}}
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@master
+  #       with:
+  #         name: bundle_drop
+  #         path: ${{env.ARCHIVE_DIR}}
   publish:
     name: Publish Bundle created
-    needs: build
+    # needs: build
     permissions: write-all
     # if: startswith(github.ref, 'refs/tags/v')
     env:
       ARTIFACT_DIR: ./release
     runs-on: ubuntu-latest
     steps:
-      - name: download artifacts
-        uses: actions/download-artifact@master
-        with:
-          name: bundle_drop
-          path: ${{env.ARTIFACT_DIR}}
+      # - name: download artifacts
+      #   uses: actions/download-artifact@master
+      #   with:
+      #     name: bundle_drop
+      #     path: ${{env.ARTIFACT_DIR}}
       
-      - name: Set Release Version
-        run: |
-          REL_VERSION_FILE="${{ env.ARTIFACT_DIR }}/release_version.txt"
-          REL_VER=`cat ${REL_VERSION_FILE}`
-          echo "REL_VERSION=${REL_VER}" >> $GITHUB_ENV
-          rm -f ${REL_VERSION_FILE}
+      # - name: Set Release Version
+      #   run: |
+      #     REL_VERSION_FILE="${{ env.ARTIFACT_DIR }}/release_version.txt"
+      #     REL_VER=`cat ${REL_VERSION_FILE}`
+      #     echo "REL_VERSION=${REL_VER}" >> $GITHUB_ENV
+      #     rm -f ${REL_VERSION_FILE}
 
-      - name: generate checksum files
-        run: cd ${ARTIFACT_DIR} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
+      # - name: generate checksum files
+      #   run: cd ${ARTIFACT_DIR} && for i in *; do sha256sum -b $i > "$i.sha256"; done && cd -
 
-      - name: lists artifacts
-        run: ls -l ${{ env.ARTIFACT_DIR }}
+      # - name: lists artifacts
+      #   run: ls -l ${{ env.ARTIFACT_DIR }}
       
       - name: Upload release using ncipollo/release-action
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ env.ARTIFACT_DIR }}/daprbundle_linux_amd64.tar.gz"
+          artifacts: ""
           token:  ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
           repo: ${{ github.repository }}
-          tag: "v${{ env.REL_VERSION }}"
-          name: "Dapr Installer-Bundle v${{ env.REL_VERSION }}"
+          tag: "vedge"
+          name: "Dapr Installer-Bundle vedge"
           prerelease: true
           allowUpdates: true
 

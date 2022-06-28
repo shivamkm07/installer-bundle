@@ -146,8 +146,8 @@ jobs:
       #     name: "Dapr Installer-Bundle vedge"
       #     prerelease: true
       #     allowUpdates: true
-
-      - uses: ncipollo/release-action@v1
+      - name: Upload release using ncipollo/release-action
+        uses: ncipollo/release-action@v1
         with:
           artifacts: ""
           bodyFile: ""
